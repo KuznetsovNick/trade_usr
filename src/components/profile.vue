@@ -5,6 +5,7 @@ export default {
   name: 'Profile',
   data() {
     return {
+      name: this.$store.getters.getUser.name,
     }
   },
   methods: {
@@ -23,9 +24,11 @@ export default {
 </script>
 
 <template>
-  <input id="redacted_name">
-  <button @click="redact_name">save</button>
-  <button @click="this.$router.push('/menu')">close</button>
+  <div style="display: flex; flex-direction: row; gap: 7px; margin: 20px">
+    <input id="redacted_name" class="element" :value="name">
+    <button @click="redact_name" class="element">save</button>
+    <button @click="this.$router.push('/menu')" class="element">close</button>
+  </div>
 </template>
 
 <style scoped>

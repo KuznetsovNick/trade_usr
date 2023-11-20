@@ -74,8 +74,8 @@ export default {
           labels: x,
           datasets: [{
             label: this.stocks[i],
-            backgroundColor: 'rgb(255, 99, 132)',
-            borderColor: 'rgb(255, 99, 132)',
+            backgroundColor: 'darkseagreen',
+            borderColor: 'darkseagreen',
             data: y,
           }]
         };
@@ -84,7 +84,7 @@ export default {
 
         chartRef.value = new Chart(ctx, {
           type: 'line',
-          data: data
+          data: data,
         });
         this.chartRefs.push(chartRef);
       }
@@ -114,8 +114,8 @@ export default {
 
     fill_personal_stocks(){
       for(let i = 0; i < this.personal_stocks.data.length; i++){
-        document.getElementById(`qty${i}`).innerHTML = `quantity: ${this.personal_stocks.data[i].qty}`
-        document.getElementById(`balance${i}`).innerHTML = `profit: ${this.personal_stocks.data[i].balance.toFixed(2)}`
+        document.getElementById(`qty${i}`).innerHTML = `You have: ${this.personal_stocks.data[i].qty}`
+        document.getElementById(`balance${i}`).innerHTML = `profit: ${Math.round(this.personal_stocks.data[i].balance*100)/100}`
       }
     },
 
@@ -129,8 +129,8 @@ export default {
       if(res.data.status === "ok"){
         this.$store.commit('setUserBalance', res.data.balance)
         this.balance = this.$store.getters.getUser.balance
-        document.getElementById(`qty${index}`).innerHTML = `quantity: ${res.data.qty}`
-        document.getElementById(`balance${index}`).innerHTML = `profit: ${res.data.stock_balance}`
+        document.getElementById(`qty${index}`).innerHTML = `You have: ${res.data.qty}`
+        document.getElementById(`balance${index}`).innerHTML = `profit: ${Math.round(res.data.stock_balance * 100)/100}`
         this.qty_chosen[index] = 0
       } else {
         alert(res.data.status)
@@ -146,21 +146,28 @@ export default {
   <div id="graphics">
     <div v-for="index in stocks.length" :key="index" style="width: max-content; height: max-content">
       <canvas :id="`${index-1}`" style="width: 30rem; height: 15rem"></canvas>
-      <div :id="`cost${index-1}`">{{current_cost[index-1]}}</div>
-      <div :id="`qty${index-1}`"></div>
-      <div :id="`balance${index-1}`"></div>
-      <div id="controls">
-        <button @click="change_qty(index-1, -1)">-</button>
-        <div :id="`chosen${index-1}`">{{qty_chosen[index-1]}}</div>
-        <button @click="change_qty(index-1, 1)">+</button>
+      <div style="display: flex; flex-direction: row; justify-content: center; gap: 60px">
+        <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 5px">
+          <div :id="`cost${index-1}`" style="height: max-content">cost: {{current_cost[index-1]}}</div>
+          <div :id="`qty${index-1}`" style="height: max-content"></div>
+          <div :id="`balance${index-1}`" style="height: max-content"></div>
+        </div>
+        <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 5px">
+          <div id="controls">
+            <button class="element" @click="change_qty(index-1, -1)">-</button>
+            <div :id="`chosen${index-1}`">{{qty_chosen[index-1]}}</div>
+            <button class="element" @click="change_qty(index-1, 1)">+</button>
+          </div>
+          <div :id="`sum${index-1}`">{{Math.floor(-qty_chosen[index-1]*current_cost[index-1]*100)/100}}
+            ({{Math.round((balance-qty_chosen[index-1]*current_cost[index-1])*100)/100}})</div>
+          <button class="element" @click="confirm_deal(index-1)">Confirm</button>
+        </div>
       </div>
-      <div :id="`sum${index-1}`">{{(-qty_chosen[index-1]*current_cost[index-1]).toFixed(2)}} ({{(balance-qty_chosen[index-1]*current_cost[index-1]).toFixed(2)}})</div>
-      <button @click="confirm_deal(index-1)">Confirm</button>
     </div>
-    <button @click="this.$router.push('/menu')" style="width: max-content">close</button>
   </div>
 
-  <div style="position: fixed; top: 0; right: 0">Balance: {{balance}}$</div>
+  <button class="element" @click="this.$router.push('/menu')" style="position: fixed; bottom: 0; right: 0; margin: 30px; z-index: 1;">close</button>
+  <h4 style="position: fixed; top: 0; right: 0; margin: 10px">Balance: {{Math.round(balance*100)/100}}$</h4>
 </template>
 <style scoped>
 #graphics{
@@ -173,5 +180,6 @@ export default {
   display: flex;
   flex-direction: row;
   gap: 5px;
+  justify-content: center;
 }
 </style>

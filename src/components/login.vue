@@ -22,8 +22,11 @@ export default {
 </script>
 
 <template>
-  <input id="login" placeholder="your id">
-  <button id="confirm_login" @click="conf">Enter</button>
+    <h3>Welcome to Trade</h3>
+    <div style="display: flex; flex-direction: row; gap: 7px">
+      <input id="login" class="element" placeholder="your id">
+      <button id="confirm_login" class="element" @click="conf">Enter</button>
+    </div>
 </template>
 
 <style scoped>
